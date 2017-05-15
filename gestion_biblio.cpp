@@ -2,20 +2,23 @@
 #include<string.h>
 #include<stdlib.h>
 
-typedef struct livre{
-  int code;
-  char titre[30];
-  char genre[30];
-  char auteur[30];
+typedef struct livre
+{
+int code;
+char titre[30];
+char genre[30];
+char auteur[30];
 }livre;
 
-typedef struct listlivre{
+typedef struct listlivre
+{
   struct listlivre *suiv;
   livre a;
   int NExemplaires;
 }listlivre;
 
-typedef struct filetudiant{
+typedef struct filetudiant
+{
   struct filetudiant *suiv;
   int codelivre;
   char nometudiant[30];
@@ -24,6 +27,11 @@ typedef struct filetudiant{
 
 filetudiant *f;
 listlivre *liste;
+
+void printSpaces()
+{
+  printf("\n\n\n\n");
+}
 
 void suprfile(int code)
 {
@@ -34,7 +42,7 @@ void suprfile(int code)
   if(p->suiv->suiv==NULL)
     p->suiv=NULL;
   else
-    p=p->suiv->suiv;
+    p=p->suiv->suiv;  
 }
 
 void suprliste(int code)
@@ -51,14 +59,13 @@ void suprliste(int code)
 
 void ajoutlivre(livre L, filetudiant *F)
 {
-
-  //Le cas de la non existance du livre dans la file des Ètudiants
+  //Le cas de la non existance du livre dans la file des √©tudiants
   if(F==NULL)
     {
       listlivre *pl1,*pl2;
       pl1=liste;
       pl2=liste;
-
+      
       listlivre *p=(listlivre*)malloc(sizeof(listlivre));
       p->a.code=L.code;
       p->suiv=NULL;
@@ -67,20 +74,17 @@ void ajoutlivre(livre L, filetudiant *F)
       strcpy(p->a.titre,L.titre);
       p->NExemplaires=1;
       if(liste==NULL){
-
 	liste=p;
       }
-
+      
       else
         {
 	  while((pl1!=NULL)&(L.code!=pl2->a.code))
 	    {
 	      pl2=pl1;
-
-	      pl1=pl1->suiv;
-
+	      pl1=pl1->suiv; 
 	    }
-
+	  
 	  if(pl1==NULL)
 	    {
 	      pl2->suiv=p;
@@ -88,24 +92,28 @@ void ajoutlivre(livre L, filetudiant *F)
 	  else
 	    pl1->NExemplaires++;
         }
-
+      
       return;
     }
+  
   //Le cas de l'existance dans la file
   if(F->codelivre==L.code)
     {
-      printf("Le livre a ete delivree avec succes au Ètudiant %s",F->nometudiant);
+      printf("Le livre a ete delivree avec succes au √©tudiant %s",F->nometudiant);
       return;
     }
   return ajoutlivre(L,F->suiv);
 }
 
-
 void afficherlist(listlivre *L)
 {
   while(L)
     {
-      printf("%d*%s\n",L->NExemplaires,L->a.titre);
+      if(L->NExemplaires == 1)
+	printf("1 seule exemplaire de %s\n",L->a.titre);
+      else
+	printf("%d exemplaires de %s\n",L->NExemplaires,L->a.titre);
+      
       L=L->suiv;
     }
 }
@@ -125,27 +133,25 @@ void ajoutfile(char nomE[],int code)
       p->suiv=f;
       f=p;
     }
-
+  
   return;
 }
-
-
 
 void servirlivre(char nomE[],int code,listlivre *L)
 {
   if(L==NULL)
     {
-      printf("le livre n'est pas disponible, on a ajoutÈ l'Ètudiant %s a file d'attente",nomE);
+      printf("le livre n'est pas disponible, on a ajout√© l'√©tudiant %s a file d'attente",nomE);
       ajoutfile(nomE,code);
       return;
     }
-
+  
   if(L->a.code==code)
     {
       if(L->NExemplaires==0)
         {
 	  ajoutfile(nomE,code);
-	  printf("le livre n'est pas disponible, on a ajoutÈ l'Ètudiant %s a file d'attente",nomE);
+	  printf("le livre n'est pas disponible, on a ajout√© l'√©tudiant %s a file d'attente",nomE);
 	  return;
         }
       else{
@@ -155,9 +161,7 @@ void servirlivre(char nomE[],int code,listlivre *L)
       }
     }
   return servirlivre(nomE,code,L->suiv);
-
 }
-
 
 void afficherfile(filetudiant *F)
 {
@@ -177,107 +181,121 @@ void sauvegarde(listlivre *L)
       while(L)
 	{
 	  fwrite(L,sizeof(listlivre),1,fs);
-	  L=L->suiv;
-
+	  L=L->suiv;  
 	}
     }
 }
 
-
 int menu()
 {
-  int choix;
-  printf("1-ajouter un livre\n");
-  printf("2-Servir un etudiant\n");
-  printf("3-afficher liste des livres\n");
-  printf("4-Ajouter a la file\n");
-  printf("5-Afficher la file\n");
-  printf("6-Quitter\n");
-  printf("entrer votre choix \t");
-  scanf("%d",&choix);
-
-  switch(choix){
-  case 1:
-    {
-      listlivre *pl1,*pl2;
-      pl1=liste;
-      livre liv;
-      printf("Entrer le code : ");
-      scanf("%d",&liv.code);
-      getchar();
-      while((pl1!=NULL)&&(liv.code!=pl2->a.code))
-	{
-	  pl2=pl1;
-	  pl1=pl1->suiv;
-
-	}
-      if(liv.code==pl2->a.code)
-	{
-	  printf("\nce livre figure dÈja dans la liste des livres , on a augmentÈ le nombre d'exemplaire de 1\n");
-	  pl2->NExemplaires++;
-	}
-
-      else{
-
-
-	printf("Entrer l'auteur : ");
-	gets(liv.auteur);
-	printf("Entrer le genre : ");
-	gets(liv.genre);
-	printf("Entrer le titre : ");
-	gets(liv.titre);
-	ajoutlivre(liv,f);	}
+    int choix;
+    printf("1- Ajouter un livre\n");
+    printf("2- Servir un etudiant\n");
+    printf("3- Afficher liste des livres\n");
+    printf("4- Ajouter a la file\n");
+    printf("5- Afficher la file\n");
+    printf("6- Quitter\n");
+    printf("\n\n");
+    printf("Entrer votre choix : ");
+    
+    scanf("%d",&choix);
+    
+   
+    switch(choix){
+    case 1:
+      {
+	listlivre *pl1,*pl2;
+   	pl1=liste;
+	pl2=liste;
+	livre liv;
+	printf("Entrer le code : ");
+	scanf("%d",&liv.code);
+	getchar();
+	
+	int livre_trouve = 0;
+	while((pl1!=NULL))
+	  {
+	    if(liv.code==(pl1->a).code)
+	      {
+		printf("\nCe livre figure d√©j√† dans la liste des livres , on a augment√© le nombre d'exemplaire de 1\n");
+		pl2->NExemplaires++;
+		livre_trouve = 1;
+		break;
+	      }
+	    pl1=pl1->suiv;
+	  }
+	
+	
+	// cas ou le livre n'est pas trouv√© dans la biblio
+	if(livre_trouve == 0)
+	  {
+	    printf("Entrer l'auteur : ");
+	    fgets(liv.auteur, sizeof(liv.auteur), stdin);
+	    printf("Entrer le genre : ");
+	    fgets(liv.genre, sizeof(liv.genre), stdin);
+	    printf("Entrer le titre : ");
+	    fgets(liv.titre, sizeof(liv.titre), stdin);
+	    ajoutlivre(liv,f);
+	    printf("livre ajout√© avec succ√®s √† la biblioth√®que");
+	    printSpaces();
+	  }
+	
+	
+	break;
+      }
+    case 2:
+      {
+	int n;
+        char nometudiant[30];
+	printSpaces();
+        printf("entrer le nom de l'etudiant : ");
+        scanf("%s",(char *)&nometudiant);
+        printf("\n entrer le code du livre : ");
+        scanf("%d",&n);
+        servirlivre(nometudiant,n,liste);
+	break;
+      }
+    case 3:
+      {
+	printSpaces();
+	afficherlist(liste);
+	break;
+      }
+    case 4:
+      {
+	int code;
+	char NomE[30];
+	printSpaces();
+	printf("Entrer le code : ");
+	scanf("%d",&code);
+	getchar();
+	printf("Entrer le nom de l'etudiant : ");
+	fgets(NomE, sizeof(NomE), stdin);
+	servirlivre(NomE,code,liste);
+	break;
+      }
+    case 5:
+      {
+	printSpaces();
+	afficherfile(f);
+	break;
+      }
+    case 6:
+      sauvegarde(liste);
       break;
     }
-  case 2:
-    {
-      int n;
-      char nometudiant[30];
-      printf("entrer le nom de l'etudiant\t");
-      scanf("%s",&nometudiant);
-      printf("\n entrer le code du livre\t ");
-      scanf("%d",&n);
-      servirlivre(nometudiant,n,liste);
-      break;
-    }
-  case 3:
-    {
-      afficherlist(liste);
-      break;
-    }
-  case 4:
-    {
-      int code;
-      char NomE[30];
-      printf("Entrer le code : ");
-      scanf("%d",&code);
-      getchar();
-      printf("Entrer le nom de l'etudiant : ");
-      gets(NomE);
-      servirlivre(NomE,code,liste);
-      break;
-    }
-  case 5:
-    {
-      afficherfile(f);
-      break;
-    }
-  case 6:
-    sauvegarde(liste);
-    break;
-  }
-  return choix;
+    return choix;
 }
 
 int  main()
 {
   liste=NULL;
-
+ 
   f=NULL;
   int ch;
   do
     {
       ch=menu();
-
+      printSpaces();
     }while(ch!=6);
 }
